@@ -1,0 +1,37 @@
+version: '3.9'
+networks:
+  color-network:
+    driver: bridge
+
+services:
+  red:
+    image: nginx:red
+    container_name: nginx-red
+    networks:
+     - color-network
+
+  green:
+    image: nginx:green
+    container_name: nginx-green
+    networks:
+      - color-network
+
+  blue:
+    image: nginx:blue
+    container_name: nginx-blue
+    networks:
+      - color-network
+
+  request-router:
+    image: nginx:alpine
+    container_name: nginx-router
+    networks:
+      - color-network
+    ports:
+      - 8080:80
+    volumes:
+      - ./config/nginx-reverse-proxy.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+     - red
+     - green
+     - blue

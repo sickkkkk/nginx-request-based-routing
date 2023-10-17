@@ -1,0 +1,32 @@
+upstream red {
+    server nginx-red:80;
+}
+
+upstream green {
+    server nginx-green:80;
+}
+
+upstream blue {
+    server nginx-blue:80;
+}
+
+server {
+    listen 80;
+
+    location / {
+        proxy_set_header X-Feature $http_x_feature; # Set the custom header
+
+        if ($http_x_feature = "red") {
+            proxy_pass http://red;
+        }
+        if ($http_x_feature = "green") {
+            proxy_pass http://green;
+        }
+        if ($http_x_feature = "blue") {
+            proxy_pass http://blue;
+        }
+
+        # Default backend if the X-Feature header is not set
+        proxy_pass http://red; # You can choose a different default if needed
+    }
+}
